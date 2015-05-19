@@ -35,9 +35,9 @@
         <div class="send_area" style="height:10%;margin-top:5px">
           <div class="col-lg-12" style="padding:0">
             <div class="input-group">
-              <input type="text" class="form-control" placeholder="" style="height:100%;border-radius:0" ng-model="vm.message" is-entered="message_send">
+              <input type="text" class="form-control" ng-disabled="vm.disable_chat_window" placeholder="" style="height:100%;border-radius:0" ng-model="vm.message" is-entered="message_send">
               <span class="input-group-btn">
-                <button class="btn btn-default" type="button" style="border-radius:0" ng-click="vm.send_message()">Go!</button>
+                <button class="btn btn-default" ng-disabled="vm.disable_chat_window" type="button" style="border-radius:0" ng-click="vm.send_message()">Send</button>
               </span>
             </div><!-- /input-group -->
           </div><!-- /.col-lg-6 -->
@@ -63,13 +63,15 @@
             <div class="col-lg-12">
               <div class="input-group">
                 <span class="input-group-btn">
-                  <button class="btn btn-default" type="button">Location</button>
+                  <button class="btn btn-default" type="button" ng-click="vm.user_location()">
+                    <span class="fui-location"></span>
+                  </button>
                 </span>
-                <input type="text" class="form-control" placeholder="Your Range in km">
+                <input type="text" class="form-control" placeholder="Your Range in km" ng-model="vm.range">
               </div>
             </div>
           </div>
-          <button ng-show="vm.show_chat" ng-click="vm.find(tags-input)" class="btn btn-primary" style="width:100%;margin-top:5px">Start Chatting...</button>
+          <button ng-show="vm.show_chat" ng-disabled="vm.disable_chat" ng-click="vm.find(tags-input)" class="btn btn-primary" style="width:100%;margin-top:5px" ng-bind="vm.chat_text"></button>
           <button ng-show="!vm.show_chat" ng-click="vm.stop(tags-input)" class="btn btn-primary" style="width:100%;margin-top:5px">Stop Chatting...</button>
         </div>
       </div>

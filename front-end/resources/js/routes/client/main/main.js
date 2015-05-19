@@ -11,15 +11,16 @@
     function Main($location, $rootScope, $state, $timeout, $window, socket, roomToken) {
       var vm = this;
 
-      vm.show_chat          = true;
-      vm.counterVideoAdded  = 1;
+      vm.show_chat            = true;
+      vm.disable_chat_window  = true;
 
       vm.find           = find;
       vm.stop           = stop;
       vm.send_message   = send_message;
       vm.user_location  = user_location;
 
-      var message = '<strong class="connecting">Connecting...</br></strong>';
+      var message   = '<strong class="connecting">Connecting...</br></strong>';
+      vm.chat_text  = 'Start Chatting...';
 
       roomToken.removeToken();
 
@@ -46,6 +47,7 @@
         console.log('stranger');
         $('.connecting').remove();
         $('.disconnected').remove();
+        vm.disable_chat = false;
       });
 
       socket.on('disconnect', function() {
@@ -65,6 +67,7 @@
       socket.on('videoRemoved', function() {
         console.log('video is removed socket');
         roomToken.removeToken();
+        vm.disable_chat = true;
       });
 
       socket.on('join_room', function(data) {
@@ -80,6 +83,7 @@
 
 
       function find() {
+        console.log(vm.range);
         if ((vm.lat === undefined && vm.lon === undefined) && vm.range !== undefined) {
           return;
         }
@@ -96,30 +100,21 @@
 
       function stop() {
         $window.location.href = '/';
-        // $state.go('main');
-        // webrtc.stopLocalVideo();
-        // webrtc.leaveRoom();
-        // $('#localVideo').children().remove();
-        // socket.emit('close');
-
         vm.show_chat = true;
       }
 
       webrtc.on('videoAdded', function (video, peer) {
-        console.log('video added');
+        vm.disable_chat = false;
         $('.connecting').remove();
         $('.disconnected').remove();
         message = '<strong class="connected">Stranger is now connected...</br></strong>';
         $('.textarea').append(message);
         var remotes = document.getElementById('remotes');
-        if (vm.counterVideoAdded === 1) {
-          if (remotes) {
-              remotes.appendChild(video);
-              $(video).addClass('img img-responsive');
-              // socket.emit
-          }
+        if (remotes) {
+            remotes.appendChild(video);
+            $(video).addClass('img img-responsive');
+            //socket.emit
         }
-        vm.counterVideoAdded++;
       });
 
       webrtc.on('videoRemoved', function (video, peer) {
@@ -139,12 +134,19 @@
       });
 
       function user_location() {
+        vm.disable_chat = true;
+        vm.chat_text    = 'Locating Your Position...';
         navigator.geolocation.getCurrentPosition(success, error);
       }
 
       function success(position) {
-        vm.lat  = position.coords.latitude;
-        vm.lon  = position.coords.longitude;
+        console.log(position);
+        $timeout(function() {
+          vm.disable_chat = false;
+        }, 0);
+        vm.chat_text    = 'Start Chatting...';
+        vm.lat          = position.coords.latitude;
+        vm.lon          = position.coords.longitude;
       }
 
       function error() {

@@ -17,8 +17,6 @@
         socket.disconnect();
       });
 
-
-
       /*chat*/
       socket.on('send_message', function(data) {
         socket.broadcast.to(data.room).emit('receive_message', data.message);
@@ -91,11 +89,6 @@
           });
         }
       });
-
-      // if (socket.id) {
-        //console.log(io.shortID.generate());
-        // socket.id = io.shortID.generate();
-      // }
       console.log('client disconnected');
     }
   };
