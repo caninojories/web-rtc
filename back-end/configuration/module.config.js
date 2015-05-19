@@ -21,9 +21,16 @@
     googleAuth        : require(service + './googleAuth'),
     User              : require('../model/User'),
     mongoDB           : require('../configuration/mongodb'),
+    socket            : require(service + './socket'),
     xPoweredBy        : require(service + './xPoweredBy'),
     use_app           : require('./use_app.config'),
     use_api           : require('./use_api.config'),
+
+    /*elastic_search service*/
+    elastic_search_interest               : require(service + './elastic_search_interest'),
+    elastic_search_location               : require(service + './elastic_search_location'),
+    elastic_search_location_with_interest : require(service + './elastic_search_location_with_interest'),
+    elastic_search_random                 : require(service + './elastic_search_random'),
 
     args              : require('yargs').argv,
     bodyParser        : require('body-parser'),
@@ -50,6 +57,7 @@
     Promise           : require('bluebird'),
     qs                : require('querystring'),
     request           : require('request-promise'),
+    shortID           : require('shortid'),
     url               : require('url'),
 
     port              : process.env.PORT || 3000,

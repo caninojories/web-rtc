@@ -2,7 +2,6 @@
   'use strict';
 
   module.exports = function(node) {
-
     /*Fork Workers*/
     var timeouts = [];
     /*Use a Vanilla for loop to fork our Clusters*/

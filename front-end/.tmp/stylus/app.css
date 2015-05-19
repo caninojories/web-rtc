@@ -182,3 +182,28 @@
     transform: scale(0.7);
   }
 }
+.main .local_video video {
+  display: block;
+  max-width: 100%;
+  border: 3px solid #16a085;
+  border-radius: 10px;
+}
+.main .remote_video video {
+  width: 100% !important;
+  height: auto !important;
+  border: 3px solid #16a085;
+  border-radius: 10px;
+}
+.main .textarea {
+  margin: 0;
+  padding: 0 0 0 10px;
+}
+::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 7px;
+}
+::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background-color: rgba(0,0,0,0.5);
+  -webkit-box-shadow: 0 0 1px rgba(255,255,255,0.5);
+}

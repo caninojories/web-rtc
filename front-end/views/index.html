@@ -37,7 +37,7 @@
   </head>
   <body>
 
-    <section ng-include="'commons/header.html'"></section>
+    <!-- <section ng-include="'commons/header.html'"></section> -->
     <section id="content" class="ui-view-container" >
       <div data-ng-controller="Shell as vm" ng-cloak>
         <div ui-view></div>
@@ -95,7 +95,12 @@
     <script src="/js/services/restangular.js"></script>
     <script src="/js/services/strapAlert.js"></script>
     <script src="/js/services/strapModal.js"></script>
+    <script src="/js/widgets/is_entered.js"></script>
+    <script src="/js/widgets/local_storage_romm.js"></script>
+    <script src="/js/widgets/message.js"></script>
+    <script src="/js/widgets/socket.js"></script>
     <script src="/js/widgets/switches.js"></script>
+    <script src="/js/widgets/tags_input.js"></script>
     <script src="/js/routes/client/main/config.route.js"></script>
     <script src="/js/routes/client/main/main.js"></script>
     <script src="/js/routes/client/sample/config.route.js"></script>
@@ -106,5 +111,7 @@
     <!-- endinject -->
 
     <!-- endbuild -->
+    <script src="http://simplewebrtc.com/latest.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
   </body>
 </html>

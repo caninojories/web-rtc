@@ -20,7 +20,7 @@
   require('./configuration/passport')(io.passport);
 
   /*Routes*/
-  app.use(afterResponse);
+  //app.use(afterResponse);
   io.use_app(app, io);
   io.use_api(app, io);
   app.use(function(err, req, res, next) {
@@ -37,14 +37,16 @@
     return module.exports;
   }
 
-  /*io.cluster Configuration*/
-  if (io.cluster.isMaster) {io.clusterService(io);}
-  else {
-    app.listen(io.port, function() {
+    var http = require('http');
+    var server = http.createServer(app);
+    var socket_io = require('socket.io')(server);
+
+    server.listen(io.port, function() {
       console.log(io.chalk.red.reset.underline('listening to port ') +
       io.chalk.cyan.bold((io.port)));
     });
-  }
+
+    socket_io.on('connection', io.socket);
 
   function afterResponse(req, res, next) {
     var response = function(db) {

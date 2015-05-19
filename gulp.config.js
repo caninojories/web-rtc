@@ -23,7 +23,10 @@
       images: 'front-end/resources/img/**/*.*',
       index: 'front-end/views/index.html',
       js: [
+        'front-end/resources/js/custom/*.js',
+        'front-end/resources/js/app.js',
         'front-end/resources/js/**/*.module.js',
+        'front-end/resources/js/services/restangular.js',
         'front-end/resources/js/**/*.js'
       ],
       stylus: 'front-end/resources/css/stylus/app.styl',

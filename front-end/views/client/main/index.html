@@ -1,1 +1,86 @@
+<!-- Primary tags input -->
+<style>
+      .videoContainer {
+          position: relative;
+          width: 200px;
+          height: 150px;
+      }
+      .videoContainer video {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+      }
+      .volume_bar {
+          position: absolute;
+          width: 5px;
+          height: 0px;
+          right: 0px;
+          bottom: 0px;
+          background-color: #12acef;
+      }
+  </style>
 
+
+<!-- <iframe src="/views/client/main/index.html">
+  <p>Your browser does not support iframes.</p>
+</iframe> -->
+<!-- <iframe width="100%" name="{{frameName}}" src="/views/client/main/index.html"></iframe> -->
+<div class="main">
+  <div class="container-fluid" style="height:100vh;padding:0">
+    <div class="col-lg-8 col-md-8 col-sm-8 col-xs-8" style="height:100%">
+      <div style="height:70%">
+        <div class="textarea" message-send style="height:90%;border:3px solid #ccc;overflow:scroll;padding-bottom:30px;">
+        </div>
+
+        <div class="send_area" style="height:10%;margin-top:5px">
+          <div class="col-lg-12" style="padding:0">
+            <div class="input-group">
+              <input type="text" class="form-control" placeholder="" style="height:100%;border-radius:0" ng-model="vm.message" is-entered="message_send">
+              <span class="input-group-btn">
+                <button class="btn btn-default" type="button" style="border-radius:0" ng-click="vm.send_message()">Go!</button>
+              </span>
+            </div><!-- /input-group -->
+          </div><!-- /.col-lg-6 -->
+        </div>
+      </div>
+      <div class="tags" style="height:30%;">
+
+        <div class="col-lg-12">
+          <div class="col-lg-6">
+            <div class="col-lg-12">
+              <h5 style="font-size:16px">Your Searchable Tags</h5>
+            </div>
+            <div class="col-lg-12">
+              <div class="tagsinput-primary">
+                <input tags-input name="tagsinput" class="tagsinput" data-role="tagsinput" value=""/>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="col-lg-12">
+              <h5 style="font-size:16px">Use My Location (just put a number)</h5>
+            </div>
+            <div class="col-lg-12">
+              <div class="input-group">
+                <span class="input-group-btn">
+                  <button class="btn btn-default" type="button">Location</button>
+                </span>
+                <input type="text" class="form-control" placeholder="Your Range in km">
+              </div>
+            </div>
+          </div>
+          <button ng-show="vm.show_chat" ng-click="vm.find(tags-input)" class="btn btn-primary" style="width:100%;margin-top:5px">Start Chatting...</button>
+          <button ng-show="!vm.show_chat" ng-click="vm.stop(tags-input)" class="btn btn-primary" style="width:100%;margin-top:5px">Stop Chatting...</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" style="padding:0">
+      <div class="col-lg-12" style="padding:0 10px 0 0;">
+        <div id="localVideo" class="local_video"></div>
+      </div>
+      <div class="col-lg-12" style="padding:0 10px 0 0;margin-top:10px">
+        <div id="remotes" class="remote_video"></div>
+      </div>
+    </div>
+  </div>
