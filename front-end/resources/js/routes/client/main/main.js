@@ -27,7 +27,8 @@
 
       var webrtc = new SimpleWebRTC({
         localVideoEl: 'localVideo',
-        remoteVideosEl: '',
+        remoteVideosEl: 'remotes',
+        // user: ''
       });
 
       $rootScope.$on('tags', function(event, data) {
@@ -153,10 +154,36 @@
 
       webrtc.on('videoAdded', function (video, peer) {
         vm.disable_chat = false;
-        var remotes = document.getElementById('remotes');
-        //$(video).addClass('img img-responsive');
-        remotes.appendChild(video);
-        //console.log('videoAdded');
+        if (peer && peer.pc) {
+          peer.pc.on('iceConnectionStateChange', function (event) {
+            switch (peer.pc.iceConnectionState) {
+              case 'checking':
+                console.log('checking');
+                //connstate.innerText = 'Connecting to peer...';
+                break;
+              case 'connected':
+              case 'completed': // on caller side
+                console.log('completed');
+                var remotes = document.getElementById('remotes');
+                remotes.appendChild(video);
+                //connstate.innerText = 'Connection established.';
+                break;
+              case 'disconnected':
+                console.log('disconnected');
+                //connstate.innerText = 'Disconnected.';
+                break;
+              case 'failed':
+                break;
+              case 'closed':
+                console.log('closed');
+                //connstate.innerText = 'Connection closed.';
+                break;
+            }
+          });
+        }
+        // var remotes = document.getElementById('remotes');
+        // //$(video).addClass('img img-responsive');
+        // remotes.appendChild(video);
       });
 
       webrtc.on('videoRemoved', function (video, peer) {
