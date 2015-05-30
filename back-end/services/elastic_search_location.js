@@ -47,7 +47,7 @@
         clients[socket.id].emit('join_room', {room:socket.id, match: false});
 
         /*join room for chat*/
-        socket.join(hits[0]._source.room);
+        socket.join(socket.id);
       } else {
         /*make a post to change match === true*/
         client.update({

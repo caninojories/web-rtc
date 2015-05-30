@@ -154,13 +154,9 @@
       webrtc.on('videoAdded', function (video, peer) {
         vm.disable_chat = false;
         var remotes = document.getElementById('remotes');
-        var counter = 1;
-        if (remotes && counter === 1) {
-            remotes.appendChild(video);
-            $(video).addClass('img img-responsive');
-            counter++;
-            console.log('videoAdded');
-        }
+        //$(video).addClass('img img-responsive');
+        remotes.appendChild(video);
+        //console.log('videoAdded');
       });
 
       webrtc.on('videoRemoved', function (video, peer) {
