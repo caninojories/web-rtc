@@ -2,9 +2,6 @@
   'use strict';
 
   module.exports = function(client, clients, socket, data) {
-    console.log('data');
-    console.log(data);
-
     client.search({
       index: 'webrtc',
       type: 'data',
@@ -27,8 +24,6 @@
     }).then(function(body) {
       /*make the match to true for both users*/
       var hits = body.hits.hits;
-      console.log('hits');
-      console.log(hits);
       if (hits.length === 0) {
         /*save the incoming socket id*/
         /* if this socket id is not present */
@@ -44,20 +39,12 @@
           }
         });
         /*save this room name in the client(the issuer)*/
-        console.log('false');
-        console.log(socket.id);
         clients[socket.id].emit('join_room', {room:socket.id, match: false});
 
         /*join room for chat*/
-        socket.join(socket.id);
-        return;
+        socket.join(hits[0]._source.room);
       } else {
-        console.log('socket id is present');
-        console.log('having a common interest');
-        console.log('finding a match === false');
         /*make a post to change match === true*/
-
-        //console.log(hits);
         client.update({
           index: 'webrtc',
           type: 'data',
@@ -83,14 +70,15 @@
           }
         });
         /* connect to the id of the first hits*/
-        //clients[socket.id].emit('join_me', hits[0]._source.room);
-        // clients[hits[0]._source.room].emit('join_room', hits[0]._source.room);
         clients[socket.id].emit('join_room', {room:hits[0]._source.room, match: true});
 
         clients[hits[0]._source.room].emit('room_token', hits[0]._source.room);
-        // clients[hits[0]._source.room].emit('join_room', hits[0]._source.room);
-
         clients[socket.id].emit('room_token', hits[0]._source.room);
+
+        /*message both of them they are connected*/
+        clients[socket.id].emit('connected_peer');
+        clients[hits[0]._source.room].emit('connected_peer');
+
         /*join room for chat*/
         socket.join(hits[0]._source.room);
       }

@@ -9,7 +9,7 @@
 
     /*@ngInject*/
     function socket($rootScope) {
-      var socket_ = io.connect();
+      var socket_ = io.connect('http://localhost:3000', { forceNew: true });
       var service = {
         on: on,
         emit: emit

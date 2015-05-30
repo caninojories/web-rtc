@@ -9,7 +9,15 @@
         query: {
           filtered: {
             // query:  { match: { interest: data.interest }},
-            filter: { term: { match: 'false' }}
+            filter: { term: { match: 'false' }},
+            query: {
+              multi_match: {
+                // analyzer: 'strip_html',
+                query: 'null',
+                fields: ['interest'],
+                // analyzer: 'strip_html'
+              }
+            }
           }
         }
       }
@@ -34,11 +42,8 @@
         clients[socket.id].emit('join_room', {room:socket.id, match: false});
 
         /*join room for chat*/
-        socket.join(socket.id);
+        socket.join(hits[0]._source.room);
       } else {
-        console.log('socket id is present');
-        console.log('having a common interest');
-        console.log('finding a match === false');
         /*make a post to change match === true*/
         client.update({
           index: 'webrtc',
@@ -65,16 +70,18 @@
           }
         });
         /* connect to the id of the first hits*/
+        // socket.join(room:hits[0]._source.room);
         clients[socket.id].emit('join_room', {room:hits[0]._source.room, match: true});
 
         clients[hits[0]._source.room].emit('room_token', hits[0]._source.room);
         clients[socket.id].emit('room_token', hits[0]._source.room);
-        /*join room for chat*/
-        socket.join(hits[0]._source.room);
 
         /*message both of them they are connected*/
         clients[socket.id].emit('connected_peer');
         clients[hits[0]._source.room].emit('connected_peer');
+
+        /*join room for chat*/
+        socket.join(hits[0]._source.room);
       }
     });
   };

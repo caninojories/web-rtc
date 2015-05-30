@@ -5,10 +5,10 @@
     .module('app.main')
     .controller('Main', Main);
 
-    Main.$inject = ['$location', '$rootScope', '$state', '$timeout', '$window', 'socket', 'roomToken'];
+    Main.$inject = ['$location', '$rootScope', '$state', '$timeout', '$window', 'roomToken'];
 
     /* @ngInject */
-    function Main($location, $rootScope, $state, $timeout, $window, socket, roomToken) {
+    function Main($location, $rootScope, $state, $timeout, $window, roomToken) {
       var vm = this;
 
       vm.show_chat            = true;
@@ -19,8 +19,9 @@
       vm.send_message   = send_message;
       vm.user_location  = user_location;
 
-      var message   = '<strong class="connecting">Connecting...</br></strong>';
+      var message;
       vm.chat_text  = 'Start Chatting...';
+      var socket = io.connect('http://localhost:3000', { forceNew: true });
 
       roomToken.removeToken();
 
@@ -39,23 +40,24 @@
         }, 0);
       });
 
-      socket.on('connect', function() {
-        console.log('connected');
-      });
-
       socket.on('connected_peer', function() {
-        console.log('stranger');
         $('.connecting').remove();
         $('.disconnected').remove();
-        vm.disable_chat = false;
-      });
 
-      socket.on('disconnect', function() {
-        roomToken.removeToken();
-        console.log('disconnected');
+        /*make the text connected to a stranger*/
+        $('.connecting').remove();
+        // $('.disconnected').remove();
+        message = '<strong class="connected">Stranger is now connected...</br></strong>';
+        $('.textarea').append(message);
+
+        $timeout(function() {
+          vm.disable_chat_window = false;
+        }, 0)
       });
 
       socket.on('receive_message', function(message) {
+        console.log('receive_message');
+        console.log(message);
         $rootScope.$broadcast('message', {message: message, user: 'Stranger'});
         console.log(message);
       });
@@ -64,26 +66,44 @@
         roomToken.setToken(data);
       });
 
-      socket.on('videoRemoved', function() {
-        console.log('video is removed socket');
-        roomToken.removeToken();
-        vm.disable_chat = true;
+      socket.on('stop', function() {
+        /*disconnect the other user*/
+        socket.disconnect();
+        /*give B the information that A is disconnected*/
+        $('.connecting').remove();
+        $('.connected').remove();
+        var message = '<strong class="disconnected">Stranger is disconnected...</br></strong>';
+        $('.textarea').append(message);
+
+        /*stop and remove video element from A*/
+        webrtc.stopLocalVideo();
+        webrtc.leaveRoom();
+        var $remotes  = $('#localVideo');
+        $remotes.children().remove();
+        /*disconnect the B*/
+        socket.disconnect();
+
+        /*show our chat*/
+        vm.show_chat = true;
+        $timeout(function() {
+          vm.chat_text    = 'Start Chatting...';
+        }, 0);
+
+        /*disable the chat of B*/
+        vm.disable_chat_window = true;
       });
 
       socket.on('join_room', function(data) {
-        /*sent the data*/
         webrtc.startLocalVideo();
         webrtc.on('readyToCall', function () {
           webrtc.joinRoom(data.room);
-          if (data.match === false) {
-            $('.textarea').append(message);
-          }
         });
       });
 
 
       function find() {
-        console.log(vm.range);
+        socket.connect();
+
         if ((vm.lat === undefined && vm.lon === undefined) && vm.range !== undefined) {
           return;
         }
@@ -93,43 +113,62 @@
         }
 
         vm.show_chat = false;
+        if (vm.interest === '') {
+          vm.interest = undefined;
+        }
+
         $timeout(function() {
           socket.emit('find', {interest: vm.interest, lat: vm.lat, lon: vm.lon, range: vm.range});
-        }, 2);
+        }, 0);
+
+        /*change the information for chat as connecting*/
+        $('.connected').remove();
+        $('.disconnected').remove();
+        var message   = '<strong class="connecting">Connecting...</br></strong>';
+        $('.textarea').append(message);
       }
 
       function stop() {
-        $window.location.href = '/';
+        /*make the connected peer to disconnect*/
+        socket.emit('stop', {room: roomToken.getToken()});
+        /*then disconnect the user who stop the connection*/
+        socket.disconnect();
+        /*stop and remove video element from A*/
+        webrtc.stopLocalVideo();
+        webrtc.leaveRoom();
+        var $remotes  = $('#localVideo');
+        $remotes.children().remove();
+        /*change the information for chat as connecting*/
+        $('.connecting').remove();
+        var message   = '<strong class="disconnected">Disconnected</br></strong>';
+        $('.textarea').append(message);
+        /*show our chat*/
         vm.show_chat = true;
+        $timeout(function() {
+          vm.chat_text    = 'Start Chatting...';
+        }, 0);
+        /*disable the chat of B*/
+        vm.disable_chat_window = true;
       }
 
       webrtc.on('videoAdded', function (video, peer) {
         vm.disable_chat = false;
-        $('.connecting').remove();
-        $('.disconnected').remove();
-        message = '<strong class="connected">Stranger is now connected...</br></strong>';
-        $('.textarea').append(message);
         var remotes = document.getElementById('remotes');
-        if (remotes) {
+        var counter = 1;
+        if (remotes && counter === 1) {
             remotes.appendChild(video);
             $(video).addClass('img img-responsive');
-            //socket.emit
+            counter++;
+            console.log('videoAdded');
         }
       });
 
       webrtc.on('videoRemoved', function (video, peer) {
-        $('.connected').remove();
-        message = '<strong class="disconnected">Stranger is disconnected...</br></strong>';
-        $('.textarea').append(message);
         var remotes = document.getElementById('remotes');
         var $remotes  = $('#remotes');
-        // webrtc.leaveRoom();
         vm.counterVideoAdded = 1;
         if ($remotes) {
             $remotes.children().remove();
-            /*emit changes to the other end*/
-            /*so that stop chatting will be start chatting*/
-            socket.emit('videoRemoved', roomToken.getToken());
         }
       });
 
@@ -140,7 +179,6 @@
       }
 
       function success(position) {
-        console.log(position);
         $timeout(function() {
           vm.disable_chat = false;
         }, 0);

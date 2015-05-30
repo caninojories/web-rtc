@@ -5,7 +5,8 @@
     if( global.io.mongoose.connection.readyState === 0 ) {
       return global.io.mongoose.connectAsync(dbName);
     } else {
-      return global.io.mongoose.disconnectAsync();
+      io.io.mongoose.disconnectAsync();
+      return global.io.mongoose.connectAsync(dbName);
     }
   };
 }());

@@ -14,16 +14,22 @@
       console.log('client connected');
       socket.on('disconnect', disconnect);
       socket.on('close', function() {
-        socket.disconnect();
+        disconnect();
       });
 
       /*chat*/
       socket.on('send_message', function(data) {
+        console.log(data);
         socket.broadcast.to(data.room).emit('receive_message', data.message);
       });
 
       socket.on('videoRemoved', function(room) {
         socket.broadcast.to(room).emit('videoRemoved');
+      });
+
+      socket.on('stop', function(data) {
+        console.log('stop: ' + data.room);
+        socket.broadcast.to(data.room).emit('stop');
       });
 
       socket.on('find', function(data) {
@@ -40,8 +46,10 @@
           }
         } else {
           if (data.interest !== undefined) {
+            console.log('interest');
             io.elastic_search_interest(client, clients, socket, data);
           } else {
+            console.log('random');
             /* make a random choice */
             io.elastic_search_random(client, clients, socket, data);
           }
@@ -49,8 +57,6 @@
       });
 
     function disconnect() {
-      console.log('socket id');
-      console.log(socket.id);
       /*search if we have this document*/
       client.search({
         index: 'webrtc',
@@ -74,20 +80,18 @@
             id: socket.id
           }).then(function(body) {
             if (hits[0]._source.match_id !== 'null') {
-              client.update({
+              client.delete({
                 index: 'webrtc',
                 type: 'data',
-                id : hits[0]._source.match_id.toString(),
-                body: {
-                  doc: {
-                    match: 'false',
-                    match_id: 'null'
-                  }
-                }
+                id : hits[0]._source.match_id.toString()
               });
             }
+          }, function(err) {
+            return;
           });
         }
+      }, function(error) {
+        return;
       });
       console.log('client disconnected');
     }

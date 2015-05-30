@@ -61,7 +61,7 @@
         clients[socket.id].emit('join_room', {room:socket.id, match: false});
 
         /*join room for chat*/
-        socket.join(socket.id);
+        socket.join(hits[0]._source.room);
       } else {
         /*make a post to change match === true*/
         console.log('with interest');
@@ -98,6 +98,11 @@
 
         clients[hits[0]._source.room].emit('room_token', hits[0]._source.room);
         clients[socket.id].emit('room_token', hits[0]._source.room);
+
+        /*message both of them they are connected*/
+        clients[socket.id].emit('connected_peer');
+        clients[hits[0]._source.room].emit('connected_peer');
+
         /*join room for chat*/
         socket.join(hits[0]._source.room);
       }
