@@ -21,14 +21,25 @@
 
       var message;
       vm.chat_text  = 'Start Chatting...';
-      var socket = io.connect('http://localhost:3000', { forceNew: true });
+      var socket = io.connect('http://128.199.154.56:3000', { forceNew: true });
 
       roomToken.removeToken();
+
+      var stun = {
+        'url': 'stun:128.199.154.56:8000'
+      };
+
+      var turn = {
+          'url': 'turn:128.199.154.56:8000',
+      };
 
       var webrtc = new SimpleWebRTC({
         localVideoEl: 'localVideo',
         remoteVideosEl: 'remotes',
-        // user: ''
+        url : 'http://128.199.154.56:8888',
+        peerConnectionConfig: {
+          iceServers: [stun, turn]
+        }
       });
 
       $rootScope.$on('tags', function(event, data) {
@@ -96,6 +107,7 @@
 
       socket.on('join_room', function(data) {
         webrtc.startLocalVideo();
+        console.log(webrtc);
         webrtc.on('readyToCall', function () {
           webrtc.joinRoom(data.room);
         });
