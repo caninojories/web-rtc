@@ -33,7 +33,7 @@
       socket.on('find', function(data) {
         /* search for common interest */
         if (data.lat !== undefined && data.lon !== undefined && data.range !== undefined) {
-          if (data.interest !== undefined) {
+          if (data.interest !== undefined || data.interest === '') {
             /* location = true*/
             /* interest(tags) = true */
             console.log('location with interest');
@@ -44,7 +44,7 @@
             io.elastic_search_location(client, clients, socket, data);
           }
         } else {
-          if (data.interest !== undefined) {
+          if (data.interest !== undefined || data.interest === '') {
             io.elastic_search_interest(client, clients, socket, data);
           } else {
             /* make a random choice */
