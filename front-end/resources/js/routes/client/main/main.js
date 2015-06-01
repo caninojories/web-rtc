@@ -21,7 +21,7 @@
 
       var message;
       vm.chat_text  = 'Start Chatting...';
-      var socket = io.connect('http://128.199.154.56:3000', { forceNew: true });
+      var socket = io.connect('http://localhost:3000', { forceNew: true });
 
       roomToken.removeToken();
 
@@ -68,10 +68,7 @@
       });
 
       socket.on('receive_message', function(message) {
-        console.log('receive_message');
-        console.log(message);
         $rootScope.$broadcast('message', {message: message, user: 'Stranger'});
-        console.log(message);
       });
 
       socket.on('room_token', function(data) {
@@ -106,8 +103,6 @@
       });
 
       socket.on('join_room', function(data) {
-        webrtc.startLocalVideo();
-        console.log(webrtc);
         webrtc.on('readyToCall', function () {
           webrtc.joinRoom(data.room);
         });
@@ -131,6 +126,7 @@
         }
 
         $timeout(function() {
+          webrtc.startLocalVideo();
           socket.emit('find', {interest: vm.interest, lat: vm.lat, lon: vm.lon, range: vm.range});
         }, 0);
 
@@ -193,9 +189,6 @@
             }
           });
         }
-        // var remotes = document.getElementById('remotes');
-        // //$(video).addClass('img img-responsive');
-        // remotes.appendChild(video);
       });
 
       webrtc.on('videoRemoved', function (video, peer) {

@@ -19,7 +19,6 @@
 
       /*chat*/
       socket.on('send_message', function(data) {
-        console.log(data);
         socket.broadcast.to(data.room).emit('receive_message', data.message);
       });
 
@@ -28,7 +27,6 @@
       });
 
       socket.on('stop', function(data) {
-        console.log('stop: ' + data.room);
         socket.broadcast.to(data.room).emit('stop');
       });
 
@@ -38,6 +36,7 @@
           if (data.interest !== undefined) {
             /* location = true*/
             /* interest(tags) = true */
+            console.log('location with interest');
             io.elastic_search_location_with_interest(client, clients, socket, data);
           } else {
             /* location = true*/
@@ -46,54 +45,53 @@
           }
         } else {
           if (data.interest !== undefined) {
-            console.log('interest');
             io.elastic_search_interest(client, clients, socket, data);
           } else {
-            console.log('random');
             /* make a random choice */
             io.elastic_search_random(client, clients, socket, data);
           }
         }
       });
 
-    function disconnect() {
-      /*search if we have this document*/
-      client.search({
-        index: 'webrtc',
-        type: 'data',
-        body: {
-          query: {
-            filtered: {
-              /* first step we must know if the socket id is present*/
-              filter: { term: { _id: socket.id }}
+      function disconnect() {
+        /*search if we have this document*/
+        client.search({
+          index: 'webrtc',
+          type: 'data',
+          body: {
+            query: {
+              filtered: {
+                /* first step we must know if the socket id is present*/
+                filter: { term: { _id: socket.id }}
+              }
             }
           }
-        }
-      }).then(function (body) {
-        var hits = body.hits.hits;
-        console.log(hits[0]);
-        if (hits.length !== 0) {
-          /* if we have document delete it*/
-          client.delete({
-            index: 'webrtc',
-            type: 'data',
-            id: socket.id
-          }).then(function(body) {
-            if (hits[0]._source.match_id !== 'null') {
-              client.delete({
-                index: 'webrtc',
-                type: 'data',
-                id : hits[0]._source.match_id.toString()
-              });
-            }
-          }, function(err) {
-            return;
-          });
-        }
-      }, function(error) {
-        return;
-      });
-      console.log('client disconnected');
-    }
+        }).then(function (body) {
+          var hits = body.hits.hits;
+          if (hits.length !== 0) {
+            var otherRoom = hits[0]._source.room;
+            /* if we have document delete it*/
+            client.delete({
+              index: 'webrtc',
+              type: 'data',
+              id: socket.id
+            }).then(function(body) {
+              socket.broadcast.to(otherRoom).emit('stop');
+              if (hits[0]._source.match_id !== 'null') {
+                client.delete({
+                  index: 'webrtc',
+                  type: 'data',
+                  id : hits[0]._source.match_id.toString()
+                });
+              }
+            }, function(err) {
+              return;
+            });
+          }
+        }, function(error) {
+          return;
+        });
+        console.log('client disconnected');
+      }
   };
 }());
