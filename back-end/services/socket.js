@@ -31,9 +31,11 @@
       });
 
       socket.on('find', function(data) {
+        console.log('data');
+        console.log(data);
         /* search for common interest */
         if (data.lat !== undefined && data.lon !== undefined && data.range !== undefined) {
-          if (data.interest !== undefined || data.interest !== '') {
+          if (data.interest !== undefined) {
             /* location = true*/
             /* interest(tags) = true */
             console.log('location with interest');
@@ -41,12 +43,17 @@
           } else {
             /* location = true*/
             /* interest(tags) = false */
+            console.log('location');
+
             io.elastic_search_location(client, clients, socket, data);
           }
         } else {
-          if (data.interest !== undefined || data.interest !== '') {
+          if (data.interest !== undefined) {
+            console.log('interest');
+
             io.elastic_search_interest(client, clients, socket, data);
           } else {
+            console.log('random');
             /* make a random choice */
             io.elastic_search_random(client, clients, socket, data);
           }

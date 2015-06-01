@@ -41,7 +41,7 @@
     var server = http.createServer(app);
     var socket_io = require('socket.io')(server);
 
-    server.listen(io.port, function() {
+    server.listen(3005, function() {
       console.log(io.chalk.red.reset.underline('listening to port ') +
       io.chalk.cyan.bold((io.port)));
     });
