@@ -25,21 +25,10 @@
 
       roomToken.removeToken();
 
-      var stun = {
-        url: 'stun:stun.l.google.com:19302'
-      };
-
-      var turn = {
-        url: 'turn:128.199.154.56:3478'
-      };
-
       var webrtc = new SimpleWebRTC({
         localVideoEl: 'localVideo',
         remoteVideosEl: 'remotes',
-        url : 'http://128.199.154.56:8888',
-        peerConnectionConfig: {
-          iceServers: [stun, turn]
-        }
+        url : 'http://128.199.154.56:8888'
       });
 
       $rootScope.$on('tags', function(event, data) {
