@@ -21,7 +21,7 @@
 
       var message;
       vm.chat_text  = 'Start Chatting...';
-      var socket = io.connect('http://localhost:3005', { forceNew: true });
+      var socket = io.connect('http://128.199.154.56:3005', { forceNew: true });
 
       roomToken.removeToken();
 
