@@ -190,6 +190,20 @@
         }
       });
 
+            // local p2p/ice failure
+      webrtc.on('iceFailed', function (peer) {
+        var pc = peer.pc;
+        console.log('had local relay candidate', pc.hadLocalRelayCandidate);
+        console.log('had remote relay candidate', pc.hadRemoteRelayCandidate);
+      });
+
+      // remote p2p/ice failure
+      webrtc.on('connectivityError', function (peer) {
+        var pc = peer.pc;
+        console.log('had local relay candidate', pc.hadLocalRelayCandidate);
+        console.log('had remote relay candidate', pc.hadRemoteRelayCandidate);
+      });
+
       function user_location() {
         vm.disable_chat = true;
         vm.chat_text    = 'Locating Your Position...';
